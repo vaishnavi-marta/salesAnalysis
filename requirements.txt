@@ -1,0 +1,33 @@
+# Class 12 IP Project - Hybrid Sales & Profit Analysis
+# Complete Requirements List
+
+# =============================================================================
+# SYSTEM REQUIREMENTS (Install Separately)
+# =============================================================================
+# Python >= 3.8 (Required - install from python.org or Microsoft Store)
+# Windows 10/11 with Command Prompt or PowerShell
+
+# =============================================================================
+# PYTHON PACKAGES (Install with: pip install -r requirements.txt)
+# =============================================================================
+
+# Core Data Analysis Library
+pandas>=2.0.0          # DataFrame operations, CSV import/export, data manipulation
+
+# Data Visualization Library
+matplotlib>=3.7.0      # Bar charts, line plots, histograms for sales analysis
+
+# Numerical Computing (used by pandas/matplotlib)
+numpy>=1.24.0          # Array operations and mathematical functions
+
+# =============================================================================
+# BUILT-IN PYTHON MODULES (No installation needed)
+# =============================================================================
+# pathlib, datetime, random, os, sys - All included with Python
+
+# =============================================================================
+# OPTIONAL DEPENDENCIES (Uncomment if needed)
+# =============================================================================
+# openpyxl>=3.1.0      # Excel file support for advanced exports
+# pytest>=7.0.0        # Unit testing framework
+# seaborn>=0.12.0      # Enhanced statistical visualizations
