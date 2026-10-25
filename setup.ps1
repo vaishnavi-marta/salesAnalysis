@@ -134,7 +134,7 @@ try {
 Write-Host ""
 
 Write-Host "Step 3.2: Installing required packages..." -ForegroundColor Green
-Write-Host "Installing: pandas, matplotlib, numpy" -ForegroundColor White
+Write-Host "Installing: pandas, matplotlib, numpy, customtkinter" -ForegroundColor White
 try {
     pip install -r requirements.txt 2>&1
     if ($LASTEXITCODE -ne 0) {
@@ -286,6 +286,21 @@ try {
 } catch {
     Write-Host "ERROR: numpy not working" -ForegroundColor Red
     Write-Host "SOLUTION: pip install numpy --upgrade" -ForegroundColor Yellow
+    Read-Host "Press Enter to exit"
+    exit 1
+}
+
+Write-Host ""
+Write-Host "Step 5.4: Testing CustomTkinter import..." -ForegroundColor Green
+try {
+    $customTkVersion = python -c "import customtkinter as ctk; print(ctk.__version__)" 2>&1
+    if ($LASTEXITCODE -ne 0) {
+        throw "CustomTkinter import failed"
+    }
+    Write-Host "OK CustomTkinter $customTkVersion" -ForegroundColor Green
+} catch {
+    Write-Host "ERROR: CustomTkinter not working" -ForegroundColor Red
+    Write-Host "SOLUTION: pip install customtkinter --upgrade" -ForegroundColor Yellow
     Read-Host "Press Enter to exit"
     exit 1
 }

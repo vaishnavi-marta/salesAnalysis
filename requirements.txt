@@ -16,6 +16,7 @@ pandas>=2.0.0          # DataFrame operations, CSV import/export, data manipulat
 
 # Data Visualization Library
 matplotlib>=3.7.0      # Bar charts, line plots, histograms for sales analysis
+customtkinter>=5.2.2   # Modern rounded dashboard interface
 
 # Numerical Computing (used by pandas/matplotlib)
 numpy>=1.24.0          # Array operations and mathematical functions

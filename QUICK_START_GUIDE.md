@@ -82,7 +82,7 @@ python scripts\verify_project.py
 .\run_project.ps1
 ```
 
-Choose the Python console menu or HTML sales dashboard.
+Choose the Python console menu or CustomTkinter desktop dashboard.
 
 ### Command Line Interface (CLI)
 - Traditional text-based menu system
@@ -94,13 +94,18 @@ Choose the Python console menu or HTML sales dashboard.
 python scripts\main.py
 ```
 
-### HTML Sales Dashboard
+### CustomTkinter Desktop Dashboard
 ```bash
 python scripts\gui_dashboard.py
 ```
 
+### Standalone HTML Dashboard
+```bash
+python scripts\dashboard_server.py
+```
+
 This generates `scripts\dashboard.html` from the current CSV data and opens it
-in your browser. You can reopen the HTML file directly later.
+in your browser.
 
 ---
 
@@ -116,7 +121,7 @@ python scripts\main.py
 Navigate through menus:
 1. **Data Management** - See DataFrames, head/tail, indexing examples
 2. **Analysis Queries** - Run SQL-like GROUP BY, SUM, AVG, etc.
-3. **Visualization** - Generate bar graphs, line plots, histograms, and a pie chart
+3. **Visualization** - Generate horizontally oriented graphs, histograms, and a pie chart; long-label product charts use the available canvas.
 4. **Export** - Save analyzed data to CSV
 
 ### Complete Test Suite

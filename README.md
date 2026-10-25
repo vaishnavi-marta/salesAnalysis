@@ -55,14 +55,14 @@ HYBRID-SALES-ANALYSIS/
 │   └── sales.csv
 ├── scripts/                   # Python scripts for application logic
 │   ├── main.py               # CLI menu-driven application
-│   ├── gui_dashboard.py      # HTML dashboard launcher
-│   ├── dashboard_server.py   # Builds a standalone dashboard from CSV data
+│   ├── gui_dashboard.py      # CustomTkinter desktop dashboard
+│   ├── dashboard_server.py   # Builds a standalone HTML dashboard from CSV data
 │   ├── dashboard.html        # Generated browser dashboard
 │   ├── data_processing.py    # Pandas DataFrames and CSV operations
 │   ├── analysis.py           # SQL-like queries and aggregations
 │   ├── visualization.py      # Matplotlib charts and plots
 │   └── verify_project.py     # Comprehensive test suite
-├── requirements.txt           # Dependencies: pandas, matplotlib, numpy
+├── requirements.txt           # Dependencies: pandas, matplotlib, numpy, customtkinter
 ├── run_project.ps1           # PowerShell command-line launcher
 ├── setup.ps1                 # PowerShell setup script
 ├── README.md                 # This file
@@ -73,7 +73,10 @@ HYBRID-SALES-ANALYSIS/
 
 ## Requirements
 
+- pandas
+- numpy
 - matplotlib
+- customtkinter (for the desktop dashboard)
 
 **Install dependencies**:
 ```bash
@@ -96,7 +99,7 @@ If you want to launch it from Python instead, use the new wrapper:
 python run_project.py
 ```
 
-Choose either the Python console menu or the HTML dashboard.
+Choose either the Python console menu or the CustomTkinter desktop dashboard.
 
 ### Direct Commands
 
@@ -105,14 +108,17 @@ Choose either the Python console menu or the HTML dashboard.
 python scripts/main.py
 ```
 
-**HTML Dashboard (opens in your browser):**
+**CustomTkinter desktop dashboard:**
 ```bash
 python scripts/gui_dashboard.py
 ```
 
+**Standalone HTML dashboard (opens in your browser):**
+```bash
+python scripts/dashboard_server.py
+```
+
 This creates or refreshes `scripts/dashboard.html` from the current CSV files.
-You can also reopen that HTML file directly later. The page is self-contained
-and does not use a JSON API.
 
 **Batch file (Windows only):**
 ```cmd
@@ -132,7 +138,9 @@ The console menu provides access to:
 3. **Visualization** - Open Matplotlib charts, including a pie chart
 4. **Export** - Save analyzed data to CSV
 
-The HTML dashboard shows summary statistics, product and sales-mode charts,
+The CustomTkinter dashboard shows summary statistics and retains the existing
+data, analysis, visualization, and export navigation. The HTML dashboard shows
+summary statistics, product and sales-mode charts,
 year-month trends, profit distribution, and a searchable transaction sample.
 
 ---
@@ -151,13 +159,12 @@ year-month trends, profit distribution, and a searchable transaction sample.
 - Series operations: Math on single columns
 
 ### Matplotlib
-- **Bar Graph**: Product vs Profit
-- **Bar Graph**: Online vs Offline comparison
-- **Line Plot**: Monthly profit trend
-- **Histogram**: Quantity distribution
-- **Histogram**: Profit distribution
+- **Horizontal Bar Graphs**: Product profit, product quantity, and sales-mode comparisons
+- **Horizontal Line Plot**: Monthly profit by year-month
+- **Horizontal Histograms**: Quantity and profit distributions
 - **Pie Chart**: Profit contribution by sales mode
-- **Customization**: All graphs include labels, titles, legends
+- **Readable Labels**: Product names wrap onto multiple lines
+- **Dashboard Layout**: Product charts expand to the available chart canvas; other charts preserve their aspect ratio and fit within the canvas.
 
 ### Analysis Queries
 - Profit by Product (GROUP BY + SUM)

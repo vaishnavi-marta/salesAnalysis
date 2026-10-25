@@ -1,5 +1,6 @@
 import matplotlib.pyplot as plt
 import pandas as pd
+from textwrap import fill
 from data_processing import add_profit_column
 
 
@@ -22,18 +23,19 @@ def bar_graph_profit_by_product(ax=None):
     bottom_10 = profit_by_product.tail(10)
     display_data = pd.concat([top_10, bottom_10])
 
-    fig, ax, created = _ensure_ax(ax, figsize=(6, 5))
+    fig, ax, created = _ensure_ax(ax, figsize=(12, 8))
     
     # Color top 10 differently from bottom 10
     colors = ['#1f77b4' if prod in top_10.index else '#ff7f0e' for prod in display_data.index]
 
-    ax.bar(range(len(display_data)), display_data.values, color=colors, edgecolor='black')
-    ax.set_xlabel('Product Name', fontsize=11, fontweight='bold')
-    ax.set_ylabel('Profit (₹)', fontsize=11, fontweight='bold')
+    ax.barh(range(len(display_data)), display_data.values, color=colors, edgecolor='black')
+    ax.set_xlabel('Profit (₹)', fontsize=10, fontweight='bold')
+    ax.set_ylabel('Product Name', fontsize=10, fontweight='bold')
     ax.set_title('Profit by Product (Top 10 & Bottom 10)', fontsize=13, fontweight='bold')
-    ax.set_xticks(range(len(display_data)))
-    ax.set_xticklabels(display_data.index, rotation=45, ha='right')
-    ax.grid(axis='y', alpha=0.25)
+    ax.set_yticks(range(len(display_data)))
+    ax.set_yticklabels([fill(str(name), width=34) for name in display_data.index], fontsize=8)
+    ax.invert_yaxis()
+    ax.grid(axis='x', alpha=0.25)
 
     if created:
         fig.tight_layout()
@@ -46,19 +48,17 @@ def bar_graph_profit_by_mode(ax=None):
     df = add_profit_column()
     profit_by_mode = df.groupby('mode')['profit'].sum()
 
-    fig, ax, created = _ensure_ax(ax, figsize=(4.8, 4.8))
+    fig, ax, created = _ensure_ax(ax, figsize=(8, 5))
 
     # Ensure Online and Offline are colored green shades (Online primary green)
     color_map = {'Online': '#27ae60', 'Offline': '#2ecc71'}
     colors = [color_map.get(m, '#27ae60') for m in profit_by_mode.index]
 
-    ax.bar(profit_by_mode.index, profit_by_mode.values, color=colors, edgecolor='black')
-    ax.set_xlabel('Sales Mode', fontsize=11, fontweight='bold')
-    ax.set_ylabel('Profit (₹)', fontsize=11, fontweight='bold')
+    ax.barh(profit_by_mode.index, profit_by_mode.values, color=colors, edgecolor='black')
+    ax.set_xlabel('Profit (₹)', fontsize=13, fontweight='bold')
+    ax.set_ylabel('Sales Mode', fontsize=13, fontweight='bold')
     ax.set_title('Profit: Online vs Offline', fontsize=13, fontweight='bold')
-    ax.set_xticks(range(len(profit_by_mode.index)))
-    ax.set_xticklabels(profit_by_mode.index, rotation=0)
-    ax.grid(axis='y', alpha=0.25)
+    ax.grid(axis='x', alpha=0.25)
 
     if created:
         fig.tight_layout()
@@ -108,19 +108,18 @@ def line_plot_monthly_trend(ax=None):
     fig, ax, created = _ensure_ax(ax, figsize=(5, 4))
 
     month_positions = range(len(monthly_profit))
-    ax.plot(month_positions, monthly_profit.values, marker='o', linewidth=2, color='blue')
-    ax.set_xlabel('Year and month', fontsize=11, fontweight='bold')
-    ax.set_ylabel('Profit (₹)', fontsize=11, fontweight='bold')
+    ax.plot(monthly_profit.values, month_positions, marker='o', linewidth=2, color='blue')
+    ax.set_xlabel('Profit (₹)', fontsize=11, fontweight='bold')
+    ax.set_ylabel('Year and month', fontsize=11, fontweight='bold')
     ax.set_title('Monthly Profit Trend', fontsize=13, fontweight='bold')
-    ax.grid(True, alpha=0.25)
-    tick_spacing = max(1, (len(monthly_profit) + 11) // 12)
+    ax.grid(axis='x', alpha=0.25)
+    tick_spacing = max(1, (len(monthly_profit) + 9) // 10)
     tick_positions = list(range(0, len(monthly_profit), tick_spacing))
-    ax.set_xticks(tick_positions)
-    ax.set_xticklabels(
+    ax.set_yticks(tick_positions)
+    ax.set_yticklabels(
         [str(monthly_profit.index[position]) for position in tick_positions],
-        rotation=45,
-        ha='right',
     )
+    ax.invert_yaxis()
 
     if created:
         fig.tight_layout()
@@ -134,11 +133,11 @@ def histogram_quantity_distribution(ax=None):
 
     fig, ax, created = _ensure_ax(ax, figsize=(5, 4))
 
-    ax.hist(df['quantity'], bins=5, color='coral', edgecolor='black', alpha=0.8)
-    ax.set_xlabel('Quantity Sold', fontsize=11, fontweight='bold')
-    ax.set_ylabel('Frequency', fontsize=11, fontweight='bold')
+    ax.hist(df['quantity'], bins=5, color='coral', edgecolor='black', alpha=0.8, orientation='horizontal')
+    ax.set_xlabel('Frequency', fontsize=11, fontweight='bold')
+    ax.set_ylabel('Quantity Sold', fontsize=11, fontweight='bold')
     ax.set_title('Distribution of Quantity Sold per Transaction', fontsize=13, fontweight='bold')
-    ax.grid(axis='y', alpha=0.25)
+    ax.grid(axis='x', alpha=0.25)
 
     if created:
         fig.tight_layout()
@@ -152,11 +151,11 @@ def histogram_profit_distribution(ax=None):
 
     fig, ax, created = _ensure_ax(ax, figsize=(5, 4))
 
-    ax.hist(df['profit'], bins=8, color='lightgreen', edgecolor='black', alpha=0.8)
-    ax.set_xlabel('Profit (₹)', fontsize=11, fontweight='bold')
-    ax.set_ylabel('Frequency', fontsize=11, fontweight='bold')
+    ax.hist(df['profit'], bins=8, color='lightgreen', edgecolor='black', alpha=0.8, orientation='horizontal')
+    ax.set_xlabel('Frequency', fontsize=11, fontweight='bold')
+    ax.set_ylabel('Profit (₹)', fontsize=11, fontweight='bold')
     ax.set_title('Distribution of Profit per Transaction', fontsize=13, fontweight='bold')
-    ax.grid(axis='y', alpha=0.25)
+    ax.grid(axis='x', alpha=0.25)
 
     if created:
         fig.tight_layout()
@@ -174,18 +173,19 @@ def bar_graph_quantity_by_product(ax=None):
     bottom_10 = qty_by_product.tail(10)
     display_data = pd.concat([top_10, bottom_10])
 
-    fig, ax, created = _ensure_ax(ax, figsize=(6, 5))
+    fig, ax, created = _ensure_ax(ax, figsize=(12, 8))
     
     # Color top 10 differently from bottom 10
     colors = ['#2ca02c' if prod in top_10.index else '#d62728' for prod in display_data.index]
 
-    ax.bar(range(len(display_data)), display_data.values, color=colors, edgecolor='black')
-    ax.set_xlabel('Product Name', fontsize=11, fontweight='bold')
-    ax.set_ylabel('Total Quantity Sold', fontsize=11, fontweight='bold')
+    ax.barh(range(len(display_data)), display_data.values, color=colors, edgecolor='black')
+    ax.set_xlabel('Total Quantity Sold', fontsize=10, fontweight='bold')
+    ax.set_ylabel('Product Name', fontsize=10, fontweight='bold')
     ax.set_title('Quantity Sold by Product (Top 10 & Bottom 10)', fontsize=13, fontweight='bold')
-    ax.set_xticks(range(len(display_data)))
-    ax.set_xticklabels(display_data.index, rotation=45, ha='right')
-    ax.grid(axis='y', alpha=0.25)
+    ax.set_yticks(range(len(display_data)))
+    ax.set_yticklabels([fill(str(name), width=34) for name in display_data.index], fontsize=8)
+    ax.invert_yaxis()
+    ax.grid(axis='x', alpha=0.25)
 
     if created:
         fig.tight_layout()

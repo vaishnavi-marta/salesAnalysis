@@ -10,7 +10,7 @@ Write-Host @"
 "@ -ForegroundColor Cyan
 
 Write-Host "1. Python console menu" -ForegroundColor White
-Write-Host "2. HTML sales dashboard" -ForegroundColor White
+Write-Host "2. CustomTkinter desktop dashboard" -ForegroundColor White
 Write-Host ""
 
 $choice = Read-Host "Choose an interface (1 or 2)"
