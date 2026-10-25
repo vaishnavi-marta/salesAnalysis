@@ -81,6 +81,7 @@ PROJECT/
 - **Bar Graphs**: Profit comparisons by product and mode
 - **Line Plots**: Monthly profit trends
 - **Histograms**: Distribution of quantities and profits
+- **Pie Chart**: Profit contribution by sales mode
 - **Customization**: All graphs include labels, titles, and legends
 
 ---
@@ -93,10 +94,14 @@ Profit = Quantity × (Selling Price - Cost Price)
 ```
 
 ### Sample Data
-- 5 Products (Laptop, Mouse, Keyboard, Monitor, Headphones)
-- 10 Sales transactions
+- 3,796 product records
+- 101,248 sales transactions
 - Mix of Online and Offline sales
-- Sales from January to May 2025
+- Sale dates include January 2011 through March 2025, with gaps in the source data
+
+The sales CSV already contains a profit column. The application uses those
+source values; when profit is absent, it requires quantity, selling price, and
+cost price rather than estimating a cost.
 
 ### Analysis Capabilities
 
@@ -105,23 +110,20 @@ Profit = Quantity × (Selling Price - Cost Price)
 1. **Most Profitable Product**
    ```
    Query: Find product with maximum profit
-   Result: Laptop (₹100,000)
+   Result: Calculated from the product-wise CSV data
    ```
 
 2. **Channel Comparison**
    ```
-   Online: ₹850 00 (70.2%)
-   Offline: ₹36,000 (29.8%)
+   Online: ₹7,547,396.89
+   Offline: ₹1,466,618.21
    Insight: Online sales are more profitable
    ```
 
 3. **Monthly Trends**
    ```
-   January: ₹53,000
-   February: ₹21,500
-   March: ₹10,000
-   April: ₹2,500
-   May: ₹34,000
+   Monthly totals are grouped by year and month (YYYY-MM)
+   The supplied data has 73 recorded year-month periods
    ```
 
 ---
@@ -144,12 +146,13 @@ Profit = Quantity × (Selling Price - Cost Price)
 - ✓ Line plots for trends
 - ✓ Bar graphs for comparisons
 - ✓ Histograms for distributions
+- ✓ Pie chart for sales-mode profit contribution
 - ✓ Customization: labels, titles, legends
 
 ### SQL Operations Covered
 - ✓ Aggregate Functions: SUM, AVG, MAX, MIN, COUNT
 - ✓ GROUP BY single and multiple columns
-- ✓ Date Functions: MONTH, MONTHNAME
+- ✓ Date Functions: YEAR-MONTH extraction
 - ✓ ORDER BY (sorting)
 - ✓ Equi-JOIN operations
 
@@ -184,30 +187,24 @@ Demonstrates all Class 12 IP syllabus requirements.
 ## Sample Output
 
 ```
-=== PROFIT BY PRODUCT (GROUP BY + SUM) ===
-Laptop: ₹100000.00
-Headphones: ₹8000.00
-Monitor: ₹6000.00
-Mouse: ₹4500.00
-Keyboard: ₹2500.00
+=== TOTAL PROFIT ===
+₹9,014,015.10
 
 === PROFIT BY MODE ===
-Online: ₹85000.00 (70.2%)
-Offline: ₹36000.00 (29.8%)
+Online: ₹7,547,396.89
+Offline: ₹1,466,618.21
 
-SMART INSIGHTS:
-► Laptop contributes 82.6% of total profit
-► Online sales are more profitable than offline
-► Average profit per transaction: ₹12,100
+Transactions: 101,248
+Average profit per transaction: ₹89.03
 ```
 
 ---
 
 ## Business Insights Generated
 
-1. **Product Performance**: Laptop is the dominant profit generator
+1. **Product Performance**: Product-level totals are calculated from the CSV
 2. **Channel Strategy**: Focus on online sales (higher profitability)
-3. **Seasonal Patterns**: January and May show peak sales
+3. **Monthly Trends**: Compare year-month totals where dates are available
 4. **Volume vs Profit**: Some products sell high volume but low profit
 5. **Optimization Opportunities**: Identified for low-profit products
 
@@ -281,7 +278,7 @@ SMART INSIGHTS:
 2. Support for additional CSV columns (category, region)
 3. Forecasting models for profit prediction
 4. Real-time database connection (MySQL/PostgreSQL)
-5. Web-based dashboard (Flask/Django)
+5. Additional menu options for new CSV-based analysis reports
 6. Advanced statistical analysis (regression, correlation)
 
 ---

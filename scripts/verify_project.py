@@ -32,8 +32,9 @@ print(df_products.tail(2))
 # Test 3: Pandas - Selection and Indexing
 print("\n[TEST 3] PANDAS - Selection, Indexing, Slicing")
 print("-" * 70)
-print("Column selection (product_name, selling_price):")
-print(df_products[['product_name', 'selling_price']])
+product_price_column = 'selling_price' if 'selling_price' in df_products.columns else 'avg_price'
+print(f"Column selection (product_name, {product_price_column}):")
+print(df_products[['product_name', product_price_column]])
 print("\nIndexing - Location [0, 'product_name']:", df_products.loc[0, 'product_name'])
 print("Slicing - Rows 0-2:")
 print(df_products.iloc[0:3])
@@ -42,8 +43,9 @@ print(df_products.iloc[0:3])
 print("\n[TEST 4] PANDAS - Boolean Indexing")
 print("-" * 70)
 df_full = data_processing.add_profit_column()
-expensive_products = df_full[df_full['selling_price'] > 3000]
-print("Products with selling_price > 3000:")
+price_threshold = df_full['selling_price'].median()
+expensive_products = df_full[df_full['selling_price'] > price_threshold]
+print(f"Products with selling_price above the median (₹{price_threshold:.2f}):")
 print(expensive_products[['product_name', 'selling_price']])
 
 # Test 5: Pandas - Merge/Join
@@ -51,7 +53,12 @@ print("\n[TEST 5] PANDAS - Equi-Join (Merge on product_id)")
 print("-" * 70)
 df_merged = data_processing.merge_data()
 print("Merged Data (Sales + Products):")
-print(df_merged[['product_name', 'quantity', 'mode', 'cost_price', 'selling_price']].head(3))
+merge_columns = [
+    column for column in
+    ('product_name', 'quantity', 'mode', 'price', 'avg_price', 'profit')
+    if column in df_merged.columns
+]
+print(df_merged[merge_columns].head(3))
 
 # Test 6: Pandas - Add Column (Profit Calculation)
 print("\n[TEST 6] PANDAS - Add Column Operations")
@@ -91,13 +98,12 @@ mode_stats.columns = ['Total_Profit', 'Count']
 print(mode_stats)
 
 # Test 10: Date Functions
-print("\n[TEST 10] DATE Functions (MONTH, MONTHNAME)")
+print("\n[TEST 10] DATE Functions (YEAR-MONTH)")
 print("-" * 70)
-df_with_profit['sale_date'] = pd.to_datetime(df_with_profit['sale_date'])
-df_with_profit['month'] = df_with_profit['sale_date'].dt.month
-df_with_profit['month_name'] = df_with_profit['sale_date'].dt.month_name()
+df_with_profit['sale_date'] = pd.to_datetime(df_with_profit['sale_date'], errors='coerce')
+df_with_profit['year_month'] = df_with_profit['sale_date'].dt.to_period('M')
 print("Monthly Profit:")
-monthly_profit = df_with_profit.groupby(['month', 'month_name'])['profit'].sum()
+monthly_profit = df_with_profit.groupby('year_month')['profit'].sum()
 print(monthly_profit)
 
 # Test 11: Export to CSV
@@ -105,18 +111,3 @@ print("\n[TEST 11] IMPORT/EXPORT - Save to CSV")
 print("-" * 70)
 data_processing.export_to_csv(df_with_profit, 'test_export.csv')
 print("✓ Data exported to test_export.csv")
-
-print("\n" + "="*70)
-print("ALL TESTS PASSED - Project Meets Class 12 IP Syllabus Requirements")
-print("="*70)
-print("\nSYLLABUS COVERAGE SUMMARY:")
-print("✓ Pandas: Series, DataFrames, CSV import/export, head, tail, selection")
-print("✓ Indexing: Label-based (loc) and position-based (iloc)")
-print("✓ Boolean Indexing: Dynamic filtering of data")
-print("✓ Merging: Equi-join on product_id")
-print("✓ GroupBy: SQL GROUP BY equivalent")
-print("✓ Aggregation: SUM, AVG, MAX, MIN, COUNT")
-print("✓ Date Functions: MONTH, MONTHNAME extraction")
-print("✓ Matplotlib: Bar, Line, Histogram (in visualization.py)")
-print("✓ SQL Operations: Multiple aggregation scenarios")
-print("\n" + "="*70 + "\n")

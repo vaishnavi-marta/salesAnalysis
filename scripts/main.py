@@ -1,4 +1,4 @@
-#python scripts\gui_dashboard.py#!/usr/bin/env python3
+#!/usr/bin/env python3
 """
 Uses:
 - Pandas: DataFrame creation from CSV, head(), tail(), selection, indexing, boolean indexing, groupby
@@ -6,9 +6,17 @@ Uses:
 - Python: Basic operations and menu-driven interface
 """
 
+import matplotlib.pyplot as plt
+
 import data_processing
 import analysis
 import visualization
+
+
+def _show_chart(chart_function):
+    chart_function()
+    plt.show()
+
 
 def main_menu():
     """Main menu for the application"""
@@ -76,7 +84,12 @@ def data_management_menu():
         elif choice == '3':
             df_merged = data_processing.add_profit_column()
             print("\n--- MERGED DATA WITH PROFIT CALCULATION ---")
-            print(df_merged[['product_name', 'quantity', 'selling_price', 'cost_price', 'profit']].head(7))
+            display_columns = [
+                column for column in
+                ('product_name', 'quantity', 'selling_price', 'profit')
+                if column in df_merged.columns
+            ]
+            print(df_merged[display_columns].head(7))
         
         elif choice == '4':
             df = data_processing.add_profit_column()
@@ -149,7 +162,7 @@ def visualization_menu():
     """Visualization Menu - Matplotlib plots"""
     while True:
         print("\n" + "-"*60)
-        print("DATA VISUALIZATION (Matplotlib - Line, Bar, Histogram)")
+        print("DATA VISUALIZATION (Matplotlib - Line, Bar, Histogram, Pie)")
         print("-"*60)
         print("\n1. Bar Graph - Profit by Product")
         print("2. Bar Graph - Online vs Offline Profit")
@@ -157,24 +170,27 @@ def visualization_menu():
         print("4. Histogram - Quantity Distribution")
         print("5. Histogram - Profit Distribution")
         print("6. Bar Graph - Quantity Sold by Product")
-        print("7. Back to Main Menu")
+        print("7. Pie Chart - Profit by Sales Mode")
+        print("8. Back to Main Menu")
         print("\n" + "-"*60)
         
-        choice = input("Enter your choice (1-7): ").strip()
+        choice = input("Enter your choice (1-8): ").strip()
         
         if choice == '1':
-            visualization.bar_graph_profit_by_product()
+            _show_chart(visualization.bar_graph_profit_by_product)
         elif choice == '2':
-            visualization.bar_graph_profit_by_mode()
+            _show_chart(visualization.bar_graph_profit_by_mode)
         elif choice == '3':
-            visualization.line_plot_monthly_trend()
+            _show_chart(visualization.line_plot_monthly_trend)
         elif choice == '4':
-            visualization.histogram_quantity_distribution()
+            _show_chart(visualization.histogram_quantity_distribution)
         elif choice == '5':
-            visualization.histogram_profit_distribution()
+            _show_chart(visualization.histogram_profit_distribution)
         elif choice == '6':
-            visualization.bar_graph_quantity_by_product()
+            _show_chart(visualization.bar_graph_quantity_by_product)
         elif choice == '7':
+            _show_chart(visualization.pie_chart_profit_by_mode)
+        elif choice == '8':
             break
         else:
             print("Invalid choice. Please try again.")

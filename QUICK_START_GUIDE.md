@@ -82,34 +82,25 @@ python scripts\verify_project.py
 .\run_project.ps1
 ```
 
-When you run this, you'll see:
-```
-Choose your interface:
-1. Command Line Interface (CLI) - Traditional menu system
-2. Graphical User Interface (GUI) - Modern dashboard
+Choose the Python console menu or HTML sales dashboard.
 
-Enter your choice (1 or 2)
-```
-
-### Option 1: Command Line Interface (CLI)
+### Command Line Interface (CLI)
 - Traditional text-based menu system
 - Perfect for school demonstrations and viva
 - Shows all code execution step-by-step
 
-### Option 2: Graphical User Interface (GUI) ✨ NEW!
-- Modern dashboard with buttons and visual interface
-- Embedded charts and graphs
-- User-friendly for presentations
-- Click buttons to see instant results
-
-### Option 3: Direct Python Execution
+### Direct Python Execution
 ```bash
-# CLI Version
 python scripts\main.py
+```
 
-# GUI Version
+### HTML Sales Dashboard
+```bash
 python scripts\gui_dashboard.py
 ```
+
+This generates `scripts\dashboard.html` from the current CSV data and opens it
+in your browser. You can reopen the HTML file directly later.
 
 ---
 
@@ -125,22 +116,8 @@ python scripts\main.py
 Navigate through menus:
 1. **Data Management** - See DataFrames, head/tail, indexing examples
 2. **Analysis Queries** - Run SQL-like GROUP BY, SUM, AVG, etc.
-3. **Visualization** - Generate bar graphs, line plots, histograms
+3. **Visualization** - Generate bar graphs, line plots, histograms, and a pie chart
 4. **Export** - Save analyzed data to CSV
-
-### GUI Interface (Graphical Dashboard) ✨ NEW!
-Modern visual interface with buttons and embedded charts:
-
-```bash
-python scripts\gui_dashboard.py
-```
-
-Features:
-- **📊 Data Management**: Click buttons to view data tables
-- **🔍 Analysis Queries**: One-click execution of all analysis functions
-- **📈 Data Visualization**: Interactive charts embedded in the dashboard
-- **💾 Export Data**: Simple export with filename input
-- **Welcome Screen**: Quick overview with key statistics
 
 ### Complete Test Suite
 ```bash
@@ -187,6 +164,10 @@ print(df.head())                   # Show first rows
 df['profit'] = df['quantity'] * (df['selling_price'] - df['cost_price'])
 ```
 
+The supplied sales CSV already includes `profit`. The application uses that
+recorded value and only applies the formula when the profit column is absent
+and both price columns are present.
+
 ### Demo 3: Boolean Indexing
 ```python
 high_profit = df[df['profit'] > 10000]  # Filter rows
@@ -204,8 +185,8 @@ result = pd.merge(sales_df, products_df, on='product_id')
 
 ### Demo 6: Date Functions
 ```python
-df['month'] = df['sale_date'].dt.month
-df.groupby('month')['profit'].sum()  # Monthly profit
+df['year_month'] = df['sale_date'].dt.to_period('M')
+df.groupby('year_month')['profit'].sum()  # Monthly profit, separated by year
 ```
 
 ### Demo 7: Matplotlib Plot
@@ -224,20 +205,14 @@ plt.show()
 ### Analysis Results
 ```
 === PROFIT BY PRODUCT (GROUP BY + SUM) ===
-Laptop: ₹100,000
-Headphones: ₹8,000
-Monitor: ₹6,000
-Mouse: ₹4,500
-Keyboard: ₹2,500
+Values are calculated from the supplied CSV data
 
 === PROFIT BY MODE ===
-Online: ₹85,000 (70.2%)
-Offline: ₹36,000 (29.8%)
+Online: ₹7,547,396.89
+Offline: ₹1,466,618.21
 
-=== SMART INSIGHTS ===
-✓ Online sales generate higher profit
-✓ Laptop contributes 82.6% of total profit
-✓ Sales peak in January (₹53,000)
+Total profit: ₹9,014,015.10
+Transactions: 101,248
 ```
 
 ---
@@ -247,10 +222,10 @@ Offline: ₹36,000 (29.8%)
 | Topic | Coverage | Status |
 |-------|----------|--------|
 | **Pandas** | Series, DataFrames, CSV I/O, indexing, boolean filtering | ✓ Complete |
-| **Matplotlib** | Line, bar, histogram with labels/titles/legends | ✓ Complete |
+| **Matplotlib** | Line, bar, histogram, and pie chart | ✓ Complete |
 | **SQL Operations** | MAX, MIN, AVG, SUM, COUNT, GROUP BY, JOIN | ✓ Complete |
-| **Date Functions** | MONTH, MONTHNAME extraction | ✓ Complete |
-| **Data Visualization** | 3+ plot types with customization | ✓ Complete |
+| **Date Functions** | Year-month extraction | ✓ Complete |
+| **Data Visualization** | Four plot types with customization | ✓ Complete |
 
 ---
 
@@ -263,7 +238,9 @@ Offline: ₹36,000 (29.8%)
 **A:** Using `pd.read_csv('filename.csv')` which creates a DataFrame directly from the file.
 
 ### Q: What is the profit formula?
-**A:** Profit = Quantity × (Selling Price - Cost Price). We add this as a new column using `df['profit'] = df['quantity'] * (df['selling_price'] - df['cost_price'])`.
+**A:** The supplied CSV already contains transaction profit. For another CSV
+without a profit column, the program calculates
+`quantity * (selling_price - cost_price)` when all required columns are present.
 
 ### Q: Explain equi-join in your project.
 **A:** We use `pd.merge(sales, products, on='product_id')` to combine sales records with product information using product_id as the matching key.

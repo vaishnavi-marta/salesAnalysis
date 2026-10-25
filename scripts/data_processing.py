@@ -24,14 +24,14 @@ def merge_data():
     """Merge products and sales DataFrames using equi-join (merge)"""
     df_products = load_products()
     df_sales = load_sales()
-    # Try to merge on product_id, otherwise fall back to product_name
     if 'product_id' in df_sales.columns and 'product_id' in df_products.columns:
         df_merged = pd.merge(df_sales, df_products, on='product_id', how='left')
     elif 'product_name' in df_sales.columns and 'product_name' in df_products.columns:
         df_merged = pd.merge(df_sales, df_products, on='product_name', how='left')
     else:
-        # If no common key, perform a cartesian merge (not ideal) — keep sales only
-        df_merged = df_sales.copy()
+        raise ValueError(
+            "Cannot merge sales and products: no shared product_id or product_name column."
+        )
 
     # Consolidate product name columns after merge
     if 'product_name_x' in df_merged.columns and 'product_name_y' in df_merged.columns:
@@ -48,47 +48,53 @@ def merge_data():
 def add_profit_column():
     """Add profit column to merged DataFrame"""
     df = merge_data()
-    # Ensure numeric types
     if 'quantity' in df.columns:
-        df['quantity'] = pd.to_numeric(df['quantity'], errors='coerce').fillna(0)
+        quantity = pd.to_numeric(df['quantity'], errors='coerce')
+        if (df['quantity'].notna() & quantity.isna()).any():
+            raise ValueError("The sales data contains non-numeric quantity values.")
+        df['quantity'] = quantity
 
-    # Determine selling_price from available columns
-    if 'selling_price' in df.columns:
-        df['selling_price'] = pd.to_numeric(df['selling_price'], errors='coerce')
-    elif 'price' in df.columns:
-        df['selling_price'] = pd.to_numeric(df['price'], errors='coerce')
-    elif 'avg_price' in df.columns:
-        df['selling_price'] = pd.to_numeric(df['avg_price'], errors='coerce')
-    else:
-        df['selling_price'] = 0
+    price_columns = [
+        column for column in ('selling_price', 'price', 'avg_price')
+        if column in df.columns
+    ]
+    if price_columns:
+        selling_price = pd.Series(float('nan'), index=df.index)
+        for column in price_columns:
+            price = pd.to_numeric(df[column], errors='coerce')
+            if (df[column].notna() & price.isna()).any():
+                raise ValueError(f"The sales data contains non-numeric {column} values.")
+            selling_price = selling_price.fillna(price)
+        df['selling_price'] = selling_price
 
-    # Determine cost_price; if missing, estimate as 70% of selling_price
-    if 'cost_price' in df.columns:
-        df['cost_price'] = pd.to_numeric(df['cost_price'], errors='coerce')
-    else:
-        df['cost_price'] = (df['selling_price'] * 0.70).fillna(0)
-
-    # If profit column already present, coerce numeric, otherwise compute it
     if 'profit' in df.columns:
-        df['profit'] = pd.to_numeric(df['profit'], errors='coerce').fillna(0)
+        profit = pd.to_numeric(df['profit'], errors='coerce')
+        if (df['profit'].notna() & profit.isna()).any() or profit.isna().any():
+            raise ValueError("The sales data contains missing or non-numeric profit values.")
+        df['profit'] = profit
     else:
+        required_columns = ('quantity', 'selling_price', 'cost_price')
+        missing_columns = [column for column in required_columns if column not in df.columns]
+        if missing_columns:
+            raise ValueError(
+                "Cannot calculate profit; missing required columns: "
+                + ", ".join(missing_columns)
+            )
+        if df[list(required_columns)].isna().any().any():
+            raise ValueError(
+                "Cannot calculate profit because quantity, selling price, "
+                "or cost price contains missing values."
+            )
+        for column in ('selling_price', 'cost_price'):
+            df[column] = pd.to_numeric(df[column], errors='coerce')
+        if df[list(required_columns)].isna().any().any():
+            raise ValueError(
+                "Cannot calculate profit because quantity, selling price, "
+                "or cost price contains non-numeric values."
+            )
         df['profit'] = df['quantity'] * (df['selling_price'] - df['cost_price'])
 
     return df
-
-
-def display_data(df, limit=None):
-    """Display DataFrame"""
-    print("\nData:")
-    print(df.head(limit))
-
-
-def head_tail_demo(df):
-    """Demonstrate head() and tail() functions"""
-    print("\n--- HEAD (First 3 rows) ---")
-    print(df.head(3))
-    print("\n--- TAIL (Last 3 rows) ---")
-    print(df.tail(3))
 
 
 def selection_and_indexing(df):
@@ -101,6 +107,8 @@ def selection_and_indexing(df):
 
     print("\n--- SLICING (first 10 rows) ---")
     print(df.iloc[0:10])
+
+
 def boolean_indexing(df):
     """Demonstrate boolean indexing - filter high profit products"""
     high_profit = df[df['profit'] > 5000]
@@ -125,12 +133,11 @@ def export_to_csv(df, filename):
 
 def series_operations():
     """Demonstrate Series creation and operations"""
-    df = merge_data()
+    df = add_profit_column()
     
-    # Series from DataFrame column
     profit_series = df['profit']
-    print("\n--- SERIES from column (ALL RECORDS) ---")
-    print(profit_series)
+    print("\n--- SERIES from column (first 10 records) ---")
+    print(profit_series.head(10))
     
     # Mathematical operations on Series
     print("\n--- SERIES Mathematical Operations ---")

@@ -66,6 +66,32 @@ def bar_graph_profit_by_mode(ax=None):
     return None
 
 
+def pie_chart_profit_by_mode(ax=None):
+    """PIE CHART: Profit contribution from each sales mode."""
+    df = add_profit_column()
+    profit_by_mode = df.groupby('mode')['profit'].sum()
+    if profit_by_mode.empty or (profit_by_mode < 0).any() or profit_by_mode.sum() <= 0:
+        raise ValueError(
+            "The profit-by-mode pie chart requires positive total profit "
+            "and non-negative profit for every sales mode."
+        )
+
+    fig, ax, created = _ensure_ax(ax, figsize=(5, 5))
+    ax.pie(
+        profit_by_mode.values,
+        labels=profit_by_mode.index,
+        autopct='%1.1f%%',
+        startangle=90,
+    )
+    ax.set_title('Profit Contribution by Sales Mode', fontsize=13, fontweight='bold')
+    ax.axis('equal')
+
+    if created:
+        fig.tight_layout()
+        return fig
+    return None
+
+
 def line_plot_monthly_trend(ax=None):
     """LINE PLOT: Monthly Profit Trend"""
     df = add_profit_column()
@@ -74,20 +100,27 @@ def line_plot_monthly_trend(ax=None):
 
     df['sale_date'] = pd.to_datetime(df['sale_date'], errors='coerce')
     df = df.dropna(subset=['sale_date'])
-    df['month'] = df['sale_date'].dt.month
-
-    monthly_profit = df.groupby('month')['profit'].sum()
+    df['year_month'] = df['sale_date'].dt.to_period('M')
+    monthly_profit = df.groupby('year_month')['profit'].sum()
     if monthly_profit.empty:
         raise ValueError("No monthly profit data available for plotting")
 
     fig, ax, created = _ensure_ax(ax, figsize=(5, 4))
 
-    ax.plot(monthly_profit.index, monthly_profit.values, marker='o', linewidth=2, color='blue')
-    ax.set_xlabel('Month', fontsize=11, fontweight='bold')
+    month_positions = range(len(monthly_profit))
+    ax.plot(month_positions, monthly_profit.values, marker='o', linewidth=2, color='blue')
+    ax.set_xlabel('Year and month', fontsize=11, fontweight='bold')
     ax.set_ylabel('Profit (₹)', fontsize=11, fontweight='bold')
     ax.set_title('Monthly Profit Trend', fontsize=13, fontweight='bold')
     ax.grid(True, alpha=0.25)
-    ax.set_xticks(monthly_profit.index)
+    tick_spacing = max(1, (len(monthly_profit) + 11) // 12)
+    tick_positions = list(range(0, len(monthly_profit), tick_spacing))
+    ax.set_xticks(tick_positions)
+    ax.set_xticklabels(
+        [str(monthly_profit.index[position]) for position in tick_positions],
+        rotation=45,
+        ha='right',
+    )
 
     if created:
         fig.tight_layout()

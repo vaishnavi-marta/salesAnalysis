@@ -14,7 +14,9 @@ The system helps small business owners understand:
 - **Monthly Trends**: How profit changes over time
 - **Smart Recommendations**: Data-driven business decisions
 
-**Profit Formula**: `Profit = Quantity × (Selling Price - Cost Price)`
+The supplied sales CSV already records profit. If a different input file lacks
+that column, profit is calculated as
+`Quantity × (Selling Price - Cost Price)` only when all required values exist.
 
 ---
 
@@ -33,11 +35,12 @@ The system helps small business owners understand:
 - **Bar Graphs**: Product profits, Online vs Offline comparison
 - **Line Plots**: Monthly profit trends
 - **Histograms**: Distribution of quantities and profits
+- **Pie Chart**: Profit contribution by sales mode
 - **Customization**: Labels, titles, legends, grid
 
 ### SQL-like Operations (using Pandas)
 - **Aggregate Functions**: SUM(), AVG(), MAX(), MIN(), COUNT()
-- **GROUP BY**: Product, mode, month, multiple grouping
+- **GROUP BY**: Product, mode, year-month, multiple grouping
 - **Mathematical**: Profit calculations
 - **Date Functions**: Extract month, month name from dates
 
@@ -52,13 +55,15 @@ HYBRID-SALES-ANALYSIS/
 │   └── sales.csv
 ├── scripts/                   # Python scripts for application logic
 │   ├── main.py               # CLI menu-driven application
-│   ├── gui_dashboard.py      # GUI dashboard with visual interface
+│   ├── gui_dashboard.py      # HTML dashboard launcher
+│   ├── dashboard_server.py   # Builds a standalone dashboard from CSV data
+│   ├── dashboard.html        # Generated browser dashboard
 │   ├── data_processing.py    # Pandas DataFrames and CSV operations
 │   ├── analysis.py           # SQL-like queries and aggregations
 │   ├── visualization.py      # Matplotlib charts and plots
 │   └── verify_project.py     # Comprehensive test suite
 ├── requirements.txt           # Dependencies: pandas, matplotlib, numpy
-├── run_project.ps1           # PowerShell launcher (CLI/GUI choice)
+├── run_project.ps1           # PowerShell command-line launcher
 ├── setup.ps1                 # PowerShell setup script
 ├── README.md                 # This file
 └── SETUP_GUIDE.md            # Detailed step-by-step instructions
@@ -91,9 +96,7 @@ If you want to launch it from Python instead, use the new wrapper:
 python run_project.py
 ```
 
-This gives you two options:
-1. **Command Line Interface (CLI)** - Traditional menu system
-2. **Graphical User Interface (GUI)** - Modern dashboard with buttons
+Choose either the Python console menu or the HTML dashboard.
 
 ### Direct Commands
 
@@ -102,10 +105,14 @@ This gives you two options:
 python scripts/main.py
 ```
 
-**GUI Version (Visual dashboard):**
+**HTML Dashboard (opens in your browser):**
 ```bash
 python scripts/gui_dashboard.py
 ```
+
+This creates or refreshes `scripts/dashboard.html` from the current CSV files.
+You can also reopen that HTML file directly later. The page is self-contained
+and does not use a JSON API.
 
 **Batch file (Windows only):**
 ```cmd
@@ -119,17 +126,14 @@ run_project.bat
 - Shows all code execution step-by-step
 - Traditional menu navigation
 
-**GUI Interface:**
-- Modern dashboard with visual buttons
-- Embedded charts and graphs
-- User-friendly for presentations
-- Instant results with one click
-
-Both interfaces provide access to:
+The console menu provides access to:
 1. **Data Management** - Explore DataFrames, demonstrate Pandas operations
 2. **Analysis** - Run SQL-like queries (GROUP BY, SUM, AVG, MAX, MIN)
-3. **Visualization** - Generate Matplotlib plots
+3. **Visualization** - Open Matplotlib charts, including a pie chart
 4. **Export** - Save analyzed data to CSV
+
+The HTML dashboard shows summary statistics, product and sales-mode charts,
+year-month trends, profit distribution, and a searchable transaction sample.
 
 ---
 
@@ -152,6 +156,7 @@ Both interfaces provide access to:
 - **Line Plot**: Monthly profit trend
 - **Histogram**: Quantity distribution
 - **Histogram**: Profit distribution
+- **Pie Chart**: Profit contribution by sales mode
 - **Customization**: All graphs include labels, titles, legends
 
 ### Analysis Queries
@@ -169,43 +174,45 @@ Both interfaces provide access to:
 
 ### products.csv
 ```
-product_id,product_name,cost_price,selling_price
-1,Laptop,50000,60000
-2,Mouse,500,800
-...
+product_id,product_name,category,avg_price,total_sold,total_profit
+1,"""While you Were Out"" Message Book, One Form per Page",Office Supplies,8.33,8,10.39
+2,"#10 Gummed Flap White Envelopes, 100/Box",Office Supplies,10.50,11,16.77
 ```
 
 ### sales.csv
 ```
-sale_id,product_id,quantity,mode,sale_date
-1,1,5,Online,2025-01-15
-2,2,10,Offline,2025-01-20
-...
+sale_id,source_order_id,product_id,product_name,category,quantity,price,profit,mode,sale_date,region
+1,AG-2011-2040,3421,"Tenex Lockers, Blue",Office Supplies,2,408.00,106.14,Offline,2011-01-01,Africa
+2,IN-2011-47883,169,"Acme Trimmer, High Speed",Office Supplies,3,120.00,36.04,Offline,2011-01-01,Oceania
 ```
+
+The supplied files contain 3,796 product rows and 101,248 sales transactions.
+The transaction file already includes a `profit` value; the program uses that
+source value and does not invent a cost price. If a different input file has no
+profit column, a profit calculation requires quantity, selling price, and cost
+price columns.
 
 ---
 
 ## Sample Output
 
 ```
-=== PROFIT BY PRODUCT (GROUP BY + SUM) ===
-Laptop: ₹90000.00
-Monitor: ₹18000.00
-Mouse: ₹4000.00
-...
+=== TOTAL PROFIT ===
+₹9014015.10
 
-=== SMART BUSINESS INSIGHTS ===
-► Laptop contributes 81.8% of total profit (₹90000.00)
-► Online sales are more profitable (₹87000.00 vs ₹23000.00)
-► Average profit per transaction: ₹10000.00
+Online profit: ₹7547396.89
+Offline profit: ₹1466618.21
+Transactions: 101248
 ```
 
 ---
 
 ## Viva Questions & Answers
 
-**Q1: What is the profit formula used in your system?**
-- A: Profit = Quantity × (Selling Price - Cost Price)
+**Q1: How does the system get profit?**
+- A: It uses the `profit` column in the provided sales CSV. For another dataset
+  without that column, the program can calculate profit only when quantity,
+  selling price, and cost price are available.
 
 **Q2: Explain how your project uses Pandas.**
 - A: We load product and sales data from CSV files into DataFrames, use head()/tail() to view data, perform merges (equi-join) on product_id, and use groupby() to aggregate data (simulating SQL GROUP BY).
@@ -214,7 +221,9 @@ Mouse: ₹4000.00
 - A: The sales.csv has a 'mode' column (Online/Offline). Using groupby('mode'), we calculate separate profit totals for each channel.
 
 **Q4: Which Matplotlib plots did you use and why?**
-- A: Bar graphs show product/mode profits (easy comparison), line plots show monthly trends (time series), and histograms show distribution of quantities/profits.
+- A: Bar graphs compare product and sales-mode profits, a line plot shows
+  year-month trends, histograms show quantity/profit distributions, and a pie
+  chart compares profit shares by sales mode.
 
 **Q5: How is your system different from a simple spreadsheet?**
 - A: Our system automates analysis through Python, calculates complex aggregations instantly, generates visualizations automatically, and can handle larger datasets efficiently.
@@ -223,7 +232,7 @@ Mouse: ₹4000.00
 - A: Boolean indexing filters data (e.g., df[df['profit'] > 5000]) to identify high-profit transactions without manual sorting.
 
 **Q7: How do you export analyzed data?**
-- A: We use df.to_csv() to export the merged DataFrame with calculated profit to a new CSV file for further use.
+- A: We use `df.to_csv()` to save the processed sales DataFrame as a new CSV file.
 
 ---
 

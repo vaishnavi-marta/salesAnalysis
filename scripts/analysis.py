@@ -1,5 +1,5 @@
 import pandas as pd
-from data_processing import add_profit_column, load_products
+from data_processing import add_profit_column
 
 def profit_by_product():
     """SQL equivalent: GROUP BY product, SUM profit"""
@@ -29,18 +29,15 @@ def profit_by_mode():
     return result
 
 def profit_by_month():
-    """SQL equivalent: GROUP BY MONTH(date), SUM profit"""
+    """SQL equivalent: GROUP BY year and month, SUM profit"""
     df = add_profit_column()
-    df['sale_date'] = pd.to_datetime(df['sale_date'])
-    # Extract month using date function equivalent
-    df['month'] = df['sale_date'].dt.month
-    df['month_name'] = df['sale_date'].dt.month_name()
-    
-    # GROUP BY month, SUM profit
-    result = df.groupby(['month', 'month_name'])['profit'].sum()
+    df['sale_date'] = pd.to_datetime(df['sale_date'], errors='coerce')
+    df = df.dropna(subset=['sale_date'])
+    df['year_month'] = df['sale_date'].dt.to_period('M')
+    result = df.groupby('year_month')['profit'].sum()
     print("\n=== MONTHLY PROFIT TREND ===")
-    for (month, month_name), profit in result.items():
-        print(f"{month_name}: ₹{profit:.2f}")
+    for year_month, profit in result.items():
+        print(f"{year_month}: ₹{profit:.2f}")
     
     return result
 

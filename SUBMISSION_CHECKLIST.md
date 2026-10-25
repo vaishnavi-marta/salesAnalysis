@@ -23,16 +23,6 @@
 
 ---
 
-## ⚠️ Legacy Files (Can Remove)
-
-| File | Reason | Status |
-|------|--------|--------|
-| analytics.py | Old version, replaced by analysis.py | ❌ Can delete |
-| db_setup.py | SQLite approach, switched to CSV | ❌ Can delete |
-| sales.db | SQLite database, not used anymore | ❌ Can delete |
-
----
-
 ## 📋 Project Submission Checklist
 
 ### Before Submitting to School

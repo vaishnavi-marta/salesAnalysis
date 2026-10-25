@@ -72,8 +72,3 @@ The converter will display a preview with:
 - Re-download the datasets
 - Start from Step 2
 
-## Notes
-
-- The project is ready to accept any Kaggle dataset once you run the converter
-- Your Satoshi font is configured (falls back to Arial if not installed)
-- Charts are optimized at 4.5x4.5 inches for the dashboard
